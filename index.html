@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Club Informatique IUT Ngaoundéré</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+
+    <style>
+        /* =========================================
+           VARIABLES & RESET (Ajustés pour mobile)
+           ========================================= */
+        :root {
+            --color-primary: #0a192f;
+            --color-secondary: #172a45;
+            --color-text-light: #e6f1ff;
+            --color-text-dark: #333333;
+            --color-bg-light: #f8f9fa;
+            --gradient-accent: linear-gradient(90deg, #00c6ff 0%, #0072ff 100%);
+            
+            /* Espacements réactifs */
+            --section-padding: 80px 0; /* Réduit légèrement pour mobile par défaut */
+            --nav-height: 70px; /* Navbar un peu moins haute sur mobile */
+            --border-radius-card: 16px;
+        }
+        
+        /* Sur grand écran, on augmente les espacements */
+        @media (min-width: 992px) {
+            :root {
+                --section-padding: 100px 0;
+                --nav-height: 80px;
+            }
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: var(--nav-height); }
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--color-text-dark);
+            background-color: #ffffff;
+            overflow-x: hidden;
+        }
+        .container { width: 90%; max-width: 1200px; margin: 0 auto; }
+        h1, h2, h3, h4 { color: var(--color-primary); font-weight: 700; }
+
+        /* Titres de section adaptatifs */
+        .section-header { text-align: center; margin-bottom: 40px; }
+        .section-header h2 {
+            font-size: 2rem; /* Plus petit sur mobile */
+            position: relative; display: inline-block; padding-bottom: 15px;
+        }
+        @media (min-width: 768px) { .section-header h2 { font-size: 2.5rem; margin-bottom: 60px; } }
+
+        .section-header h2::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 80px; height: 4px; background: var(--gradient-accent); border-radius: 2px; }
+        .section-header p { margin-top: 15px; color: #666; max-width: 600px; margin-left: auto; margin-right: auto; font-size: 0.95rem; }
+
+        /* Boutons Stylés & Animés */
+        .btn {
+            display: inline-block; padding: 12px 30px; background: var(--gradient-accent); color: white; text-decoration: none; font-weight: 600; border-radius: 50px; border: none; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 5px 15px rgba(0, 114, 255, 0.3); position: relative; overflow: hidden; z-index: 1;
+        }
+        /* Effet de brillance au survol */
+        .btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); transition: 0.5s; z-index: -1;
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0, 114, 255, 0.5); }
+        .btn:hover::before { left: 100%; }
+
+        /* =========================================
+           NAVIGATION (Version Mobile "Burger")
+           ========================================= */
+        .navbar {
+            position: fixed; top: 0; width: 100%; height: var(--nav-height); background: rgba(10, 25, 47, 0.98); backdrop-filter: blur(10px); z-index: 1000; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); transition: 0.3s ease;
+        }
+        .navbar .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.4rem; font-weight: 800; color: white; text-decoration: none; display: flex; align-items: center; z-index: 1001;}
+        .logo span { background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-left: 5px; }
+
+        /* Styles par défaut (Desktop) */
+        .nav-links { list-style: none; display: flex; gap: 30px; }
+        .nav-links a { color: var(--color-text-light); text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: color 0.3s ease; position: relative; }
+        .nav-links a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px; background: var(--gradient-accent); transition: width 0.3s ease; }
+        .nav-links a:hover::after { width: 100%; }
+        
+        /* Icône Burger (Cachée sur Desktop) */
+        .menu-toggle { display: none; cursor: pointer; z-index: 1001; }
+        .bar { display: block; width: 25px; height: 3px; margin: 5px auto; transition: all 0.3s ease-in-out; background-color: white; }
+
+        /* Styles Mobile (Max-width 968px) */
+        @media (max-width: 968px) {
+            /* On affiche le burger */
+            .menu-toggle { display: block; }
+            
+            /* On transforme la liste de liens en un panneau latéral plein écran */
+            .nav-links {
+                position: fixed; top: 0; right: -100%; /* Caché hors écran à droite */
+                width: 80%; height: 100vh; background: var(--color-secondary);
+                flex-direction: column; justify-content: center; align-items: center;
+                gap: 40px; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+            }
+            /* Quand le menu est actif (classe ajoutée par JS) */
+            .nav-links.active { right: 0; }
+            .nav-links a { font-size: 1.5rem; /* Liens plus gros sur mobile */ }
+
+            /* Animation du burger en croix */
+            .menu-toggle.active .bar:nth-child(2) { opacity: 0; }
+            .menu-toggle.active .bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+            .menu-toggle.active .bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+        }
+
+        /* =========================================
+           HERO SECTION (Optimisé Mobile)
+           ========================================= */
+        #hero {
+            /* Utilisation de dvh (Dynamic Viewport Height) pour une meilleure gestion sur mobile avec les barres d'adresse */
+            height: 100dvh; min-height: 600px;
+            background: linear-gradient(rgba(10, 25, 47, 0.85), rgba(10, 25, 47, 0.95)), url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3'); background-size: cover; background-position: center; background-attachment: scroll; /* Fixed bug souvent sur mobile, on met scroll */
+            display: flex; align-items: center; text-align: center; color: white; margin-top: -var(--nav-height); padding-top: var(--nav-height);
+        }
+        /* Animation de flottement */
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
+        
+        .hero-content h1 {
+            font-size: 2.5rem; /* Taille mobile */
+            line-height: 1.2; margin-bottom: 20px; color: white;
+            animation: float 6s ease-in-out infinite; /* Application du flottement */
+        }
+        @media (min-width: 768px) { .hero-content h1 { font-size: 4rem; margin-bottom: 25px;} }
+
+        .hero-content .highlight { background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-content p { font-size: 1rem; max-width: 700px; margin: 0 auto 30px; color: var(--color-text-light); opacity: 0.9; padding: 0 10px; }
+        @media (min-width: 768px) { .hero-content p { font-size: 1.2rem; margin-bottom: 40px; } }
+
+        /* =========================================
+           SECTION À PROPOS (Stack sur mobile)
+           ========================================= */
+        #about { padding: var(--section-padding); }
+        .about-container { display: flex; gap: 30px; align-items: center; flex-direction: column; /* Empilé par défaut sur mobile */ }
+        @media (min-width: 968px) { .about-container { flex-direction: row; gap: 50px; } /* Côte à côte sur desktop */ }
+        
+        .about-image { width: 100%; height: 300px; /* Hauteur fixe sur mobile */ background-image: url('https://images.unsplash.com/photo-1531482615713-2afd69097998'); background-size: cover; background-position: center; border-radius: var(--border-radius-card); box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: relative; }
+        @media (min-width: 968px) { .about-image { flex: 1; height: 450px; } }
+        
+        .about-image::before { content: ''; position: absolute; top: -15px; left: -15px; width: 100%; height: 100%; border: 3px solid #00c6ff; border-radius: var(--border-radius-card); z-index: -1; display: none; /* Caché sur petit mobile pour simplifier */ }
+        @media (min-width: 768px) { .about-image::before { display: block; top: -20px; left: -20px; } }
+        
+        .about-text { flex: 1; text-align: center; /* Centré sur mobile */ }
+        @media (min-width: 968px) { .about-text { text-align: left; } }
+        .about-text h3 { font-size: 1.5rem; margin-bottom: 15px; }
+        .about-text p { margin-bottom: 20px; color: #555; font-size: 0.95rem; }
+
+        /* =========================================
+           PLAN D'ACTION & PROJETS (Grilles)
+           ========================================= */
+        #plan-action, #team { background-color: var(--color-bg-light); }
+        section { padding: var(--section-padding); }
+        
+        .plan-grid { display: grid; grid-template-columns: 1fr; /* 1 colonne sur mobile */ gap: 25px; }
+        @media (min-width: 768px) { .plan-grid { grid-template-columns: repeat(3, 1fr); } }
+        
+        .plan-card { background: white; padding: 35px 25px; border-radius: var(--border-radius-card); text-align: center; transition: 0.3s ease; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .plan-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); border-color: #00c6ff; }
+        .plan-icon { font-size: 2.5rem; margin-bottom: 20px; background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; }
+        .plan-card h4 { font-size: 1.2rem; margin-bottom: 10px; }
+        .plan-card p { font-size: 0.9rem; }
+
+        .projects-grid { display: grid; grid-template-columns: 1fr; gap: 25px; }
+        @media (min-width: 640px) { .projects-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 992px) { .projects-grid { grid-template-columns: repeat(3, 1fr); } }
+
+        .project-card { border-radius: var(--border-radius-card); overflow: hidden; background: white; box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: 0.3s ease; }
+        .project-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+        .project-img { height: 200px; background-color: #ddd; background-size: cover; background-position: center; transition: 0.5s ease; }
+        .project-card:hover .project-img { transform: scale(1.05); }
+        .project-content { padding: 20px; }
+        .project-tag { font-size: 0.75rem; color: #0072ff; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 1px; }
+        .project-content h4 { font-size: 1.1rem; margin-bottom: 10px; }
+        .project-content p { font-size: 0.9rem; }
+
+        /* =========================================
+           NOUVEAU : SECTION ÉQUIPE (CARROUSEL SWIPER)
+           ========================================= */
+        /* Le conteneur Swiper nécessite une largeur définie */
+        .swiper-container-wrapper {
+            width: 100%;
+            position: relative;
+            padding: 0 20px; /* Espace pour les flèches sur desktop */
+        }
+        .team-swiper {
+            width: 100%;
+            padding-bottom: 50px !important; /* Espace pour la pagination en bas */
+        }
+        
+        /* Style des cartes dans le carrousel */
+        .team-member {
+            background: white;
+            padding: 40px 20px;
+            border-radius: var(--border-radius-card);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+            border-top: 3px solid transparent; /* Préparation pour le hover */
+            transition: 0.3s ease;
+            height: 100%; /* Important pour que toutes les cartes aient la même hauteur */
+        }
+        /* Sur mobile, on active le style "hover" par défaut car il n'y a pas de curseur */
+        @media (max-width: 968px) { .team-member { border-top: 3px solid #00c6ff; } }
+        .team-member:hover { border-top: 3px solid #00c6ff; transform: translateY(-5px); }
+
+        .member-photo {
+            width: 100px; height: 100px; /* Un peu plus petit sur mobile */
+            border-radius: 50%; background-color: #ddd; margin: 0 auto 20px; background-size: cover; background-position: center; border: 3px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        @media (min-width: 768px) { .member-photo { width: 120px; height: 120px; } }
+
+        .team-member h4 { font-size: 1.1rem; margin-bottom: 5px; }
+        .team-role { color: #0072ff; font-weight: 500; font-size: 0.85rem; background: rgba(0, 114, 255, 0.1); padding: 4px 12px; border-radius: 20px; display: inline-block; }
+
+        /* Customisation des contrôles Swiper */
+        .swiper-pagination-bullet-active { background: #0072ff !important; }
+        .swiper-button-next, .swiper-button-prev { color: #0072ff !important; width: 40px !important; height: 40px !important; background: white; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .swiper-button-next::after, .swiper-button-prev::after { font-size: 1.2rem !important; font-weight: bold; }
+        /* Cacher les flèches sur mobile pour épurer */
+        @media (max-width: 768px) { .swiper-button-next, .swiper-button-prev { display: none !important; } }
+
+        /* =========================================
+           CONTACT & FOOTER
+           ========================================= */
+        #contact { padding: var(--section-padding); background: var(--color-primary); color: white; text-align: center; }
+        #contact h2, #contact p { color: white; }
+        .contact-info-container { display: flex; justify-content: center; gap: 30px; margin-top: 40px; flex-wrap: wrap; flex-direction: column; /* Empilé sur mobile */ }
+        @media (min-width: 768px) { .contact-info-container { flex-direction: row; gap: 50px; } }
+        
+        .contact-item { background: rgba(255,255,255,0.05); padding: 30px 20px; border-radius: 16px; flex: 1; min-width: 200px; transition: 0.3s; }
+        .contact-item:hover { background: rgba(255,255,255,0.1); transform: translateY(-5px); }
+        .contact-item i { font-size: 2rem; background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; }
+        .contact-item h4 { color: white; margin-bottom: 10px; font-size: 1.1rem; }
+        .contact-item p { font-size: 0.9rem; color: rgba(255,255,255,0.7); }
+
+        footer { background: #050d1a; padding: 30px 20px; text-align: center; color: rgba(255,255,255,0.5); font-size: 0.85rem; }
+
+        /* =========================================
+           ANIMATIONS JS (Scroll Reveal)
+           ========================================= */
+        .reveal-up { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .reveal-up.active { opacity: 1; transform: translateY(0); }
+        .delay-200 { transition-delay: 0.2s; }
+        .delay-400 { transition-delay: 0.4s; }
+        .delay-600 { transition-delay: 0.6s; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container">
+            <a href="#hero" class="logo">CLUB-INFO<span>.IUT-NDERE</span></a>
+            
+            <div class="menu-toggle" id="mobile-menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+
+            <ul class="nav-links">
+                <li><a href="#hero" class="nav-link-item">Accueil</a></li>
+                <li><a href="#about" class="nav-link-item">À Propos</a></li>
+                <li><a href="#plan-action" class="nav-link-item">Notre Plan</a></li>
+                <li><a href="#projects" class="nav-link-item">Projets</a></li>
+                <li><a href="#team" class="nav-link-item">Bureau</a></li>
+                <li><a href="#contact" class="nav-link-item">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section id="hero">
+        <div class="container hero-content reveal-up">
+            <h1>Le Cœur Numérique de <br>l'IUT de <span class="highlight">Ngaoundéré</span>.</h1>
+            <p>Bienvenue sur le portail du Club Informatique de l'iut de Ngaoundéré. Nous rassemblons les passionnés, formons les innovateurs de demain et propulsons la technologie au sein de notre institution.</p>
+            <a href="#about" class="btn">Découvrir le Club</a>
+        </div>
+    </section>
+
+    <section id="about">
+        <div class="container">
+            <div class="section-header reveal-up">
+                <h2>Qui Sommes-Nous ?</h2>
+                <p>Un pont entre la formation académique rigoureuse et le monde professionnel technologique.</p>
+            </div>
+            <div class="about-container">
+                <div class="about-image reveal-up delay-200"></div>
+                <div class="about-text reveal-up delay-400">
+                    <h3>L'Excellence au pied de l'Adamaoua</h3>
+                    <p>L'Institut Universitaire de Technologie (IUT) de Ngaoundéré est un pilier de la formation technologique au Cameroun. Il forme des cadres intermédiaires et supérieurs compétents, prêts à relever les défis industriels et numériques du pays.</p>
+                    <h3>La Mission du Club Informatique</h3>
+                    <p>Notre club est le catalyseur de cette formation. Nous ne nous contentons pas des cours ; nous créons, nous codons, nous organisons des hackathons et nous partageons nos connaissances. Notre but est de transformer la théorie en projets concrets et de créer une communauté d'entraide solide.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="plan-action">
+        <div class="container">
+            <div class="section-header reveal-up">
+                <h2>Notre Plan d'Action</h2>
+                <p>Nos axes stratégiques pour le mandat en cours.</p>
+            </div>
+            <div class="plan-grid">
+                <div class="plan-card reveal-up delay-200">
+                    <i class="fa-solid fa-chalkboard-user plan-icon"></i>
+                    <h4>Formation & Ateliers</h4>
+                    <p>Renforcement des capacités techniques des membres via des ateliers de formations hebdomadaires (Web, Mobile, IA/Automatisations) animés par les membres du bureau et des aînés academiques.</p>
+                </div>
+                <div class="plan-card reveal-up delay-400">
+                    <i class="fa-solid fa-rocket plan-icon"></i>
+                    <h4>Innovation & Projets</h4>
+                    <p>Dans cette rubrique, nous avons entrevu concevoir plusieurs projets visant a ameliorer la gestion de sertains processus a l'iut.Pour en siter quelque un, nous avons une application de vote des delegues de facon anonyme,un site ecommerce pour la promotion des produits concu par les etudiants de l'iut, le site web vitrine du club information et la Plateforme de parainage des etudiants de l'iut.</p>
+                </div>
+                <div class="plan-card reveal-up delay-600">
+                    <i class="fa-solid fa-handshake plan-icon"></i>
+                    <h4>Partenariats Pros</h4>
+                    <p>A ce niveau, nous prevoyons collaborer avec d'autre club de l'iut en promouvant leurs produits au travert du marketing sur des reaeaux et aussi en les creant un site dans lequel ils vont pouvoir presenter et voloriser leurs realisations.</p>
+                </div>
+                 <div class="plan-card reveal-up delay-200">
+                    <i class="fa-solid fa-chalkboard-user plan-icon"></i>
+                    <h4>Formations Generales </h4>
+                    <p>Nous allons organisser des formations sur les outils de bureautique dans lesquelles seront invité a participer tout les etudiqnts de l'iut de Ngaoundéré.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects">
+        <div class="container">
+            <div class="section-header reveal-up">
+                <h2>Nos Projets En Cours</h2>
+                <p>Découvrez ce que nos membres sont capables de réaliser.</p>
+            </div>
+            <div class="projects-grid">
+                <div class="project-card reveal-up delay-200">
+                    <div class="project-img" style="background-image: url('image/sitevitrine.jpg');"></div>
+                    <div class="project-content">
+                        <span class="project-tag">Développement Web</span>
+                        <h4>Site vitrine du Club</h4>
+                        <p>Ce projet va permettre d'acroitre la visilite de notre club a l'echelle Universitaire et nous donner un plus au niveau de la crédibilité.</p>
+                    </div>
+                </div>
+                <div class="project-card reveal-up delay-200">
+                    <div class="project-img" style="background-image: url('image/codage1.jpg');"></div>
+                    <div class="project-content">
+                        <span class="project-tag">Formation (Langage Web)</span>
+                        <h4>Développement Web</h4>
+                        <p>Ce projet vise a partager nos connaissances dans les differents langages web avec nos camarades et nos cadets du niveau 1.</p>
+                    </div>
+                </div>
+                <div class="project-card reveal-up delay-600">
+                    <div class="project-img" style="background-image: url('image/formation1.jpg');"></div>
+                    <div class="project-content">
+                        <span class="project-tag">Formation Générale</span>
+                        <h4>Outil bureautique (Word,PowerPoint)</h4>
+                        <p>Ici, il est question de former les etudiants de l'iut sur les logiciel de bureautique afin qu'ils puissent mieux les utiliser pour la redaction de leur rapport de stage et la conception de leur PowerPoint de soutnance.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="team">
+        <div class="container">
+            <div class="section-header reveal-up">
+                <h2>Le Bureau Exécutif</h2>
+                <p>L'équipe dévouée qui pilote la vision du club. Glissez pour voir plus.</p>
+            </div>
+            
+            <div class="swiper-container-wrapper reveal-up delay-200">
+                <div class="swiper team-swiper">
+                    <div class="swiper-wrapper">
+                        
+                        <div class="swiper-slide">
+                            <div class="team-member">
+                                <div class="member-photo" style="background-image: url('image/moi1.jpg');"></div>
+                                <h4>NJAWOU ABOUBAKAR SIDICK</h4>
+                                <span class="team-role">Président</span>
+                            </div>
+                        </div>
+                        
+                        <div class="swiper-slide">
+                            <div class="team-member">
+                                <div class="member-photo" style="background-image: url('image/profil.png');"></div>
+                                <h4>[Nom du VP]</h4>
+                                <span class="team-role">Vice-Président</span>
+                            </div>
+                        </div>
+                        
+                        <div class="swiper-slide">
+                            <div class="team-member">
+                                <div class="member-photo" style="background-image: url('image/secretaire.jpg');"></div>
+                                <h4>KEMMEGNI KEMAYOU THEODORA</h4>
+                                <span class="team-role">Secrétaire Général</span>
+                            </div>
+                        </div>
+                        
+                        <div class="swiper-slide">
+                            <div class="team-member">
+                                <div class="member-photo" style="background-image: url('image/tresoriere.jpg');"></div>
+                                <h4>FAIZA NABILA</h4>
+                                <span class="team-role">Trésoriere</span>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="team-member">
+                                <div class="member-photo" style="background-image: url('image/censeur.jpg');"></div>
+                                <h4>MOHAMAN TASSIHOU AL-AMINE</h4>
+                                <span class="team-role">Censeur</span>
+                            </div>
+                        </div>
+
+                         <div class="swiper-slide">
+                            <div class="team-member">
+                                <div class="member-photo" style="background-image: url('image/profil.png');"></div>
+                                <h4>IBRAHIMA ARABO</h4>
+                                <span class="team-role">Communication et relations exterieure</span>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="team-member">
+                                <div class="member-photo" style="background-image: url('image/commissaireauxcomptes.jpg');"></div>
+                                <h4>LOUKMAN HAKIM</h4>
+                                <span class="team-role">Commissaire aux Comptes</span>
+                            </div>
+                        </div>
+                        
+                        <div class="swiper-slide">
+                            <div class="team-member">
+                                <div class="member-photo" style="background-image: url('image/chargerdesprojets.jpg');"></div>
+                                <h4>ALEXIS BIDJEBELE</h4>
+                                <span class="team-role">Charger des Projets</span>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="team-member">
+                                <div class="member-photo" style="background-image: url('image/formateur2.jpg');"></div>
+                                <h4>YOKOMI BEYEA JOSAPHAT</h4>
+                                <span class="team-role">Formateur</span>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="team-member">
+                                <div class="member-photo" style="background-image: url('image/formateur3.jpg');"></div>
+                                <h4>LEMOBENG TETA JUNIOR</h4>
+                                <span class="team-role">Formateur</span>
+                            </div>
+                        </div>
+                        <div class="swiper-slide">
+                            <div class="team-member">
+                                <div class="member-photo" style="background-image: url('image/formateur1.jpg');"></div>
+                                <h4>NKOA AWONO</h4>
+                                <span class="team-role">Formateur</span>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+                
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="container reveal-up">
+            <div class="section-header">
+                <h2 style="color:white">Contactez-nous</h2>
+                <p style="color: rgba(255,255,255,0.8)">Une question ? Un projet de partenariat ? N'hésitez pas.</p>
+            </div>
+            
+            <div class="contact-info-container">
+                <div class="contact-item">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <h4>Localisation</h4>
+                    <p>Campus de l'IUT, Ngaoundéré,<br>Cameroun</p>
+                </div>
+                <div class="contact-item">
+                    <i class="fa-solid fa-envelope"></i>
+                    <h4>Email</h4>
+                    <p>aboubakarnjawou@gmail.com<br></p>
+                </div>
+                <div class="contact-item">
+                    <i class="fa-brands fa-whatsapp"></i>
+                    <h4>WhatsApp</h4>
+                    <p>+237 673 07 46 04<br></p>
+                </div>
+            </div>
+             <br><br>
+            <a href="mailto:aboubakarnjawou@gmail.com" class="btn">Envoyer un Email Officiel</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>© 2025 Club Informatique IUT Ngaoundéré. Fait avec passion par le bureau exécutif.</p>
+        </div>
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+    <script>
+        // --- GESTION DU MENU MOBILE (BURGER) ---
+        const mobileMenuBtn = document.getElementById('mobile-menu');
+        const navLinksContainer = document.querySelector('.nav-links');
+        const navLinksItems = document.querySelectorAll('.nav-link-item');
+
+        // Fonction pour ouvrir/fermer le menu
+        const toggleMenu = () => {
+            mobileMenuBtn.classList.toggle('active');
+            navLinksContainer.classList.toggle('active');
+            // Empêcher le scroll du corps quand le menu est ouvert
+            document.body.style.overflowY = navLinksContainer.classList.contains('active') ? 'hidden' : 'auto';
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleMenu);
+
+        // Fermer le menu automatiquement quand on clique sur un lien
+        navLinksItems.forEach(item => {
+            item.addEventListener('click', () => {
+                if(navLinksContainer.classList.contains('active')) {
+                    toggleMenu();
+                }
+            });
+        });
+
+
+        // --- INITIALISATION DU CARROUSEL SWIPER ---
+        const swiper = new Swiper('.team-swiper', {
+            // Paramètres de base
+            slidesPerView: 1, // Combien de cartes on voit sur mobile (par défaut)
+            spaceBetween: 20, // Espace entre les cartes
+            loop: true, // Le carrousel tourne en boucle infinie
+            grabCursor: true, // Curseur "main" pour indiquer qu'on peut "grab"
+            autoplay: {
+                delay: 3500, // Défilement automatique toutes les 3.5 secondes
+                disableOnInteraction: false, // Continue après que l'utilisateur a touché
+            },
+            
+            // Pagination (les points)
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+    
+            // Flèches de navigation
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+    
+            // Points de rupture (Responsive)
+            breakpoints: {
+                // quand la fenêtre fait >= 640px (Tablette portrait)
+                640: {
+                    slidesPerView: 2,
+                    spaceBetween: 30,
+                },
+                // quand la fenêtre fait >= 1024px (Desktop)
+                1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 40,
+                },
+            }
+        });
+
+
+        // --- ANIMATIONS AU SCROLL (Intersection Observer) ---
+        // (Même logique qu'avant, très performant sur mobile)
+        const observerOptions = {
+            root: null, threshold: 0.1, rootMargin: "0px 0px -50px 0px" // Ajusté pour déclencher un peu plus tôt sur mobile
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    observer.unobserve(entry.target); 
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-up').forEach(el => observer.observe(el));
+    </script>
+
+</body>
+</html>
